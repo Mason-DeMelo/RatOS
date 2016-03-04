@@ -6,5 +6,6 @@ Rat And Treat Oscillation System
 - U3 / Labjack Python Bindings
 - Python 2.7
 
-#Credits
+#About
 Programmed by Mason DeMelo for Markus Laboratory in the UConn Psychology Department.
+Developed for the UNITS project.
