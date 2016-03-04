@@ -2,7 +2,7 @@
 Rat And Treat Oscillation System
 
 #Dependencies
-- U3 / Labjack Software
+- u3 / Labjack Drivers
 - U3 / Labjack Python Bindings
 - Python 2.7
 
