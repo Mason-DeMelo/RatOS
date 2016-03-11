@@ -10,9 +10,10 @@ import u3
 import maze
 import time
 import random
+import Queue
 
 #Simulated Bool
-simulated = True
+simulated = False
 
 #create Tk Root
 root = Tk()
@@ -43,30 +44,28 @@ def feedB():
 def a(arg):
 	if not running: 
 		return
-	if maze.rat.getPos() > 1:
-			maze.dispenserA.removePellet()
+	if maze.rat.comingFrom != "a":
 			maze.rat.setPos(1)
 			root.after(500, lambda: maze.rat.setPos(0))
-			if not maze.pelletExists():
-					maze.dispenserB.dispense()
+			feedA()
+			maze.rat.comingFrom = "a"
 	else:
 			maze.rat.setPos(1)
 			root.after(500, lambda: maze.rat.setPos(2))
+	root.after(500, lambda: maze.dispenserA.removePellet())
 				
-				
-
 def b(arg):
 	if not running: 
 		return
-	if maze.rat.getPos() < 3:
-			maze.dispenserB.removePellet()
+	if maze.rat.comingFrom != "b":
 			maze.rat.setPos(3)
 			root.after(500, lambda: maze.rat.setPos(4))
-			if not maze.pelletExists():
-					maze.dispenserA.dispense()
+			feedB()
+			maze.rat.comingFrom = "b"
 	else:
 			maze.rat.setPos(3)
 			root.after(500, lambda: maze.rat.setPos(2))
+	root.after(500, lambda: maze.dispenserB.removePellet())
 
 #Graphics
 #Create Tk Window
@@ -104,7 +103,8 @@ reset = Button(root, text="Placeholder")
 
 listbox = Listbox(root, width=65)
 
-thresholdSlider = Scale(root, from_=100, to=0, command = lambda x: maze.updateThreshold(float(x)/100))
+thresholdSliderA = Scale(root, from_=100, to=0, command = lambda x: maze.sensorA.updateThreshold(float(x)/100))
+thresholdSliderB = Scale(root, from_=100, to=0, command = lambda x: maze.sensorB.updateThreshold(float(x)/100))
 
 #Place Rat In Center on Floor
 flooring[2].configure(image=ratOnFloor)
@@ -130,7 +130,8 @@ startStop.grid(row=4, column=0)
 reset.grid(row=5, column=0)
 
 listbox.grid(row=4, column=1, columnspan=3, rowspan=2)
-thresholdSlider.grid(row=4, column = 4)
+thresholdSliderA.grid(row=4, column = 4)
+thresholdSliderB.grid(row=4, column = 5)
 
 #Function Declarations
 def log(text):
@@ -184,15 +185,28 @@ def updateGraphics():
 
 		root.after(25, updateGraphics)
 
+#Event Queue
+events = Queue.Queue()
+
+#Update Events
+def updateEvents():
+    while events.qsize() > 0:
+        thing = events.get()
+        print thing
+        root.event_generate(thing)
+    root.after(23, updateEvents)
+        
+    
 
 #Bind Events
 root.bind("<<sensorATripped>>", a)
 root.bind("<<sensorBTripped>>", b)
 
 #Initialize Maze
-maze = maze.Maze(root, dispenserAPort, dispenserBPort, sensorAPort, sensorBPort, threshold, timeout, simulated)
+maze = maze.Maze(root, events, dispenserAPort, dispenserBPort, sensorAPort, sensorBPort, threshold, timeout, simulated)
 
 #Begin Updating Graphics and Start Main Loop
 updateGraphics()
+updateEvents()
 root.mainloop()
 
