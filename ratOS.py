@@ -2,18 +2,20 @@
 
 #Import Tkinter
 try:
-        from Tkinter import *
+		from Tkinter import *
 except:
-        from tkinter import *
+		from tkinter import *
 
 import u3
 import maze
 import time
 import random
 
+#Simulated Bool
+simulated = True
+
 #create Tk Root
 root = Tk()
-
 
 #Maze Variables
 dispenserAPort = 1
@@ -22,39 +24,49 @@ sensorAPort = 5
 sensorBPort = 4
 threshold = .19
 timeout = 1
-        
+
+running = False
+
 #Functions
+def toggleStart():
+	global running 
+	running = not running
+
 def feedA():
 	#manual feedA
-        maze.dispenserA.dispense()
+		maze.dispenserA.dispense()
 
 def feedB():
 	#manual feedB
-        maze.dispenserB.dispense()
+		maze.dispenserB.dispense()
 
 def a(arg):
-        if maze.rat.getPos() > 1:
-                maze.dispenserA.removePellet()
-                maze.rat.setPos(1)
-                root.after(500, lambda: maze.rat.setPos(0))
-                if not maze.pelletExists():
-                        maze.dispenserB.dispense()
-        else:
-                maze.rat.setPos(1)
-                root.after(500, lambda: maze.rat.setPos(2))
-                
-                
+	if not running: 
+		return
+	if maze.rat.getPos() > 1:
+			maze.dispenserA.removePellet()
+			maze.rat.setPos(1)
+			root.after(500, lambda: maze.rat.setPos(0))
+			if not maze.pelletExists():
+					maze.dispenserB.dispense()
+	else:
+			maze.rat.setPos(1)
+			root.after(500, lambda: maze.rat.setPos(2))
+				
+				
 
 def b(arg):
-        if maze.rat.getPos() < 3:
-                maze.dispenserB.removePellet()
-                maze.rat.setPos(3)
-                root.after(500, lambda: maze.rat.setPos(4))
-                if not maze.pelletExists():
-                        maze.dispenserA.dispense()
-        else:
-                maze.rat.setPos(3)
-                root.after(500, lambda: maze.rat.setPos(2))
+	if not running: 
+		return
+	if maze.rat.getPos() < 3:
+			maze.dispenserB.removePellet()
+			maze.rat.setPos(3)
+			root.after(500, lambda: maze.rat.setPos(4))
+			if not maze.pelletExists():
+					maze.dispenserA.dispense()
+	else:
+			maze.rat.setPos(3)
+			root.after(500, lambda: maze.rat.setPos(2))
 
 #Graphics
 #Create Tk Window
@@ -81,16 +93,18 @@ sampleRat = Label(root, image=ratOnFloor)
 
 flooring = list()
 for i in range(0,5):
-        flooring.append(Label(root, image=floor))
+		flooring.append(Label(root, image=floor))
 header = Label(root, image=headerPhoto)
 
 manualFeederA = Button(root, command=feedA, text="Feeder A")
 manualFeederB = Button(root, command=feedB, text="Feeder B")
 
-startStop = Button(root, text="Start")
-reset = Button(root, text="Reset")
+startStop = Button(root, text="Start", command = toggleStart)
+reset = Button(root, text="Placeholder")
 
 listbox = Listbox(root, width=65)
+
+thresholdSlider = Scale(root, from_=100, to=0, command = lambda x: maze.updateThreshold(float(x)/100))
 
 #Place Rat In Center on Floor
 flooring[2].configure(image=ratOnFloor)
@@ -115,13 +129,13 @@ sensorB.grid(row=3, column=3)
 startStop.grid(row=4, column=0)
 reset.grid(row=5, column=0)
 
-listbox.grid(row=4, column=1, columnspan=4, rowspan=2)
-
+listbox.grid(row=4, column=1, columnspan=3, rowspan=2)
+thresholdSlider.grid(row=4, column = 4)
 
 #Function Declarations
 def log(text):
-        text = time.strftime("[%d/%m/%Y %H:%M:%S] ") + text
-        listbox.insert(0, text)
+		text = time.strftime("[%d/%m/%Y %H:%M:%S] ") + text
+		listbox.insert(0, text)
 
 def updateGraphics():
 		
@@ -176,7 +190,7 @@ root.bind("<<sensorATripped>>", a)
 root.bind("<<sensorBTripped>>", b)
 
 #Initialize Maze
-maze = maze.Maze(root, dispenserAPort, dispenserBPort, sensorAPort, sensorBPort, threshold, timeout)
+maze = maze.Maze(root, dispenserAPort, dispenserBPort, sensorAPort, sensorBPort, threshold, timeout, simulated)
 
 #Begin Updating Graphics and Start Main Loop
 updateGraphics()

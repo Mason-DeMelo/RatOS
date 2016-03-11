@@ -1,4 +1,8 @@
 import u3
+try:
+        from Tkinter import *
+except:
+        from tkinter import *
 from threading import Thread
 from time import sleep
 
@@ -44,20 +48,20 @@ class Sensor(FIODevice):
         self.Timeout = Timeout
         self.name = Name
         self.d.configAnalog(self.port)
-        thread = Thread(target = self.startListener)
-        thread.setDaemon(True)
-        thread.start()
+        self.thread = Thread(target = self.startListener)
+        self.thread.setDaemon(True)
+        self.thread.start()
     
     def startListener(self):
-                while True:
-                        if self.d.getAIN(self.port) < self.Threshold:
-                                print(self.name, self.d.getAIN(self.port))
-                                self.root.event_generate("<<sensor"+self.name+"Tripped>>")
-                                self.Status = True
-                                sleep(self.Timeout)
-                                while self.d.getAIN(self.port) < self.Threshold:
-                                        pass
-                        self.Status = False
+        while True:
+            if self.d.getAIN(self.port) < self.Threshold:
+                    print(self.name, self.d.getAIN(self.port))
+                    self.root.event_generate("<<sensor"+self.name+"Tripped>>")
+                    self.Status = True
+                    sleep(self.Timeout)
+                    while self.d.getAIN(self.port) < self.Threshold:
+                        pass
+            self.Status = False
 
 class Rat():
 
@@ -68,18 +72,45 @@ class Rat():
         self.pos = pos
 
     def getPos(self):
-                return self.pos
+        return self.pos
 
 
 class Maze():
 
-        def __init__(self, root, dispenserAPort, dispenserBPort, sensorAPort, sensorBPort, Threshold, Timeout):
+        def __init__(self, root, dispenserAPort, dispenserBPort, sensorAPort, sensorBPort, Threshold, Timeout, simulated):
+            if simulated: 
+                self.d = fakeU3(root)
+            else:
                 self.d = u3.U3()
-                self.rat = Rat()
-                self.dispenserA = Dispenser(root, self.d, dispenserAPort)
-                self.dispenserB = Dispenser(root, self.d, dispenserBPort)
-                self.sensorA = Sensor(root, self.d, sensorAPort, Threshold, Timeout, "A")
-                self.sensorB = Sensor(root, self.d, sensorBPort, Threshold, Timeout, "B")
+            self.root = root
+            self.rat = Rat()
+            self.dispenserA = Dispenser(root, self.d, dispenserAPort)
+            self.dispenserB = Dispenser(root, self.d, dispenserBPort)
+            self.sensorA = Sensor(root, self.d, sensorAPort, Threshold, Timeout, "A")
+            self.sensorB = Sensor(root, self.d, sensorBPort, Threshold, Timeout, "B")
 
         def pelletExists(self):
-                return self.dispenserA.pellet or self.dispenserB.pellet
+            return self.dispenserA.pellet or self.dispenserB.pellet
+
+        def updateThreshold(self, newThreshold):
+            self.sensorA.Threshold = newThreshold
+            self.sensorB.Threshold = newThreshold
+
+
+class fakeU3():
+    
+    def __init__(self,root,*args):
+        pass
+
+    def configDigital(*args):
+        pass
+
+    def configAnalog(*args):
+        pass
+
+    def setFIOState(*args):
+        pass
+
+    def getAIN(self,*args):
+        return .5
+
