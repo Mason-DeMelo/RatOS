@@ -1,8 +1,8 @@
-import u3
 try:
-        from Tkinter import *
+    import u3
 except:
-        from tkinter import *
+    pass
+from Tkinter import *
 from threading import Thread
 from time import sleep
 
@@ -24,9 +24,10 @@ class FIODevice():
 
 class Dispenser(FIODevice):
 
-    def __init__(self, root, events, U3Device, FIOPort):
+    def __init__(self, root, events, U3Device, FIOPort, name):
         FIODevice.__init__(self, root, events, U3Device, FIOPort)
         self.pellet = False
+        self.name = name
         self.d.configDigital(self.port)
         self.d.setFIOState(self.port)
 
@@ -34,7 +35,7 @@ class Dispenser(FIODevice):
         self.pellet = True
         self.Status = True
         self.d.configAnalog(self.port)
-        self.events.put("<<dispensed>>")
+        self.events.put("<<dispenser"+self.name+"Dispensed>>")
         self.root.after(500, lambda: self.d.configDigital(self.port))
         self.root.after(500, lambda: self.setStatus(False))
 
@@ -43,11 +44,11 @@ class Dispenser(FIODevice):
 
 class Sensor(FIODevice):
 
-    def __init__(self, root, events, U3Device, FIOPort, Threshold, Timeout, Name):
+    def __init__(self, root, events, U3Device, FIOPort, threshold, timeout, name):
         FIODevice.__init__(self, root, events, U3Device, FIOPort)
-        self.Threshold = Threshold
-        self.Timeout = Timeout
-        self.name = Name
+        self.Threshold = threshold
+        self.Timeout = timeout
+        self.name = name
         self.d.configAnalog(self.port)
         self.thread = Thread(target = self.startListener)
         self.thread.setDaemon(True)
@@ -59,8 +60,6 @@ class Sensor(FIODevice):
     def startListener(self):
         while True:
             if self.d.getAIN(self.port) < self.Threshold:
-                    print(self.name, self.d.getAIN(self.port))
-                    #self.root.event_generate("<<sensor"+self.name+"Tripped>>")
                     self.events.put("<<sensor"+self.name+"Tripped>>")
                     self.Status = True
                     sleep(self.Timeout)
@@ -73,6 +72,12 @@ class Rat():
     def __init__(self, pos = 2):
         self.pos = pos
         self.comingFrom = None
+        self.pelletsEaten = 0
+
+    def reset(self):
+        self.pos = 2
+        self.comingFrom = None
+        self.pelletsEaten = 0
 
     def setPos(self, pos):
         self.pos = pos
@@ -81,25 +86,39 @@ class Rat():
         return self.pos
 
     def setComingFrom(self, side):
+        if side not in ["a", "b", None]:
+            raise Exception("Not a valid side.")
         self.comingFrom = side
 
     def getComingFrom(self):
         return self.comingFrom
 
+    def atePellet(self):
+        self.pelletsEaten += 1
+
 
 class Maze():
 
-        def __init__(self, events, root, dispenserAPort, dispenserBPort, sensorAPort, sensorBPort, Threshold, Timeout, simulated):
+        def __init__(self, events, root, simulated):
+            #Maze Variables
+            dispenserAPort = 1
+            dispenserBPort = 0
+            sensorAPort = 5
+            sensorBPort = 4
+            threshold = .19
+            timeout = 1
+
+
             if simulated: 
                 self.d = fakeU3(root)
             else:
                 self.d = u3.U3()
             self.root = root
             self.rat = Rat()
-            self.dispenserA = Dispenser(root, events, self.d, dispenserAPort)
-            self.dispenserB = Dispenser(root, events, self.d, dispenserBPort)
-            self.sensorA = Sensor(root, events, self.d, sensorAPort, Threshold, Timeout, "A")
-            self.sensorB = Sensor(root, events, self.d, sensorBPort, Threshold, Timeout, "B")
+            self.dispenserA = Dispenser(root, events, self.d, dispenserAPort, "A")
+            self.dispenserB = Dispenser(root, events, self.d, dispenserBPort, "B")
+            self.sensorA = Sensor(root, events, self.d, sensorAPort, threshold, timeout, "A")
+            self.sensorB = Sensor(root, events, self.d, sensorBPort, threshold, timeout, "B")
 
         def pelletExists(self):
             return self.dispenserA.pellet or self.dispenserB.pellet
@@ -108,7 +127,7 @@ class Maze():
             self.sensorA.Threshold = newThreshold
             self.sensorB.Threshold = newThreshold
 
-
+#This class is only used when on a testing machine that is not connected to the U3 device.
 class fakeU3():
     
     def __init__(self,root,*args):
@@ -125,4 +144,3 @@ class fakeU3():
 
     def getAIN(self,*args):
         return .5
-
