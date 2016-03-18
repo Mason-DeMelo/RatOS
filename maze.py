@@ -5,6 +5,7 @@ except:
 from Tkinter import *
 from threading import Thread
 from time import sleep
+import time
 
 class FIODevice():
 
@@ -73,11 +74,11 @@ class Rat():
         self.pos = pos
         self.comingFrom = None
         self.pelletsEaten = 0
+        self.startTime = None
+        self.endTime = None
 
     def reset(self):
-        self.pos = 2
-        self.comingFrom = None
-        self.pelletsEaten = 0
+        self.__init__()
 
     def setPos(self, pos):
         self.pos = pos
@@ -92,6 +93,20 @@ class Rat():
 
     def getComingFrom(self):
         return self.comingFrom
+
+    def startTimer(self):
+        self.startTime = time.time()
+
+    def stopTimer(self):
+        self.endTime = time.time()
+
+    def getTime(self):
+        if self.startTime == None:
+            return "None"
+        elif self.endTime == None:
+            return round(time.time() - self.startTime,1)
+        else:
+            return round(self.endTime - self.startTime,1)
 
     def atePellet(self):
         self.pelletsEaten += 1

@@ -2,7 +2,9 @@
 
 #Import Tkinter, Queue and Maze.py
 from Tkinter import *
+import tkMessageBox
 import Queue
+import time
 import maze
 
 #Toggles U3 device.
@@ -10,14 +12,40 @@ simulated = True
 
 #create Tk Root
 root = Tk()
+root.tk_setPalette(background='#D8D8D8')
+root.title("RatOS")
+root.wm_iconbitmap(r"res/Rat.ico")
 running = False
+saved = True
 
 #Functions
 def toggleStart():
-	global running 
+	global running
+	global saved
+
+	if not saved and not running and not tkMessageBox.askokcancel("Are you sure?", "You haven't saved this data! This recording will be lost if you continue."):
+		return
+
 	running = not running
+	saved = False
+
+	if running:
+		maze.rat.reset()
+		maze.rat.startTimer()
+	else:
+		maze.rat.stopTimer()
+
+	saveButton.configure(state= DISABLED if running else NORMAL, bg= "light grey" if running else "yellow")
+	startStop.configure(text = "Stop" if running else "Start", bg = "Red" if running else "Green")
+
+def save():
+	global saved
+
+	output = open('test.txt', 'w')
+	output.write("Success!")
+	output.close()
+	saved = True
 	maze.rat.reset()
-	startStop.configure(text = "Stop" if running else "Start")
 
 def aTripped(arg):
 	if not running: 
@@ -40,7 +68,7 @@ def bTripped(arg):
 			maze.rat.setPos(3)
 			root.after(500, lambda: maze.rat.setPos(4))
 			maze.dispenserB.dispense()
-			maze.rat.catePellet()
+			maze.rat.atePellet()
 			maze.rat.comingFrom = "b"
 	else:
 			maze.rat.setPos(3)
@@ -52,8 +80,6 @@ def log(text):
 		listbox.insert(0, text)
 
 #Graphics
-root.title("RatOS")
-
 #Load Photos
 headerPhoto = PhotoImage(file="res/ratOS.gif")
 floor = PhotoImage(file="res/floor.gif")
@@ -85,9 +111,8 @@ for i in range(0,5):
 manualFeederA = Button(root, command= lambda:maze.dispenserA.dispense(), text="Feeder A")
 manualFeederB = Button(root, command= lambda:maze.dispenserB.dispense(), text="Feeder B")
 #Experiment Control Buttons
-startStop = Button(root, text="Start", command = toggleStart)
-reset = Button(root, text="Placeholder")
-
+startStop = Button(root, text="Start", command = toggleStart, bg="Green")
+saveButton = Button(root, text="Save", command=save, state=DISABLED, bg="light grey")
 
 #Listbox for visual text output.
 listbox = Listbox(root, width=65)
@@ -95,10 +120,23 @@ listbox = Listbox(root, width=65)
 
 #Scales
 #Threshold Scales
-thresholdSliderA = Scale(root, from_=0, to=100, orient=HORIZONTAL, label="Threshold A", command=lambda x: maze.sensorA.updateThreshold(float(x)/100))
-thresholdSliderB = Scale(root, from_=0, to=100, orient=HORIZONTAL, label="Threshold B", command=lambda x: maze.sensorB.updateThreshold(float(x)/100))
+thresholdSliderA = Scale(root, from_=0, to=100, orient=HORIZONTAL, label="Threshold A", command=lambda x: maze.sensorA.updateThreshold(float(x)/100), bg='#D8D8D8')
+thresholdSliderB = Scale(root, from_=0, to=100, orient=HORIZONTAL, label="Threshold B", command=lambda x: maze.sensorB.updateThreshold(float(x)/100), bg='#D8D8D8')
 
+#Entries and Their Labels
+#Rat Number
+ratNumber = Entry(root, width=4, borderwidth=3, bg="white")
+ratNumberLabel = Label(text="Rat Number:")
+#Experimenter Initials
+experimenter = Entry(root, width = 4, borderwidth=3, bg="white")
+experimenterLabel = Label(text="Experimenter:")
+#Comments
+comments = Text(root, width=35, height=5, borderwidth=3, wrap=WORD, bg="white")
+commentsLabel = Label(text="Comments:")
 
+#Uneditable Data
+pelletsEatenLabel = Label(text="Pellets Eaten:   0")
+timeElapsedLabel = Label(text="Time Elapsed: None")
 
 #Setup GUI Layout
 #Place Header
@@ -115,12 +153,29 @@ for i in range(5):
 sensorA.grid(row=3, column=1)
 sensorB.grid(row=3, column=3)
 #Place Threshold Sliders
-thresholdSliderA.grid(row=4, column = 1)
-thresholdSliderB.grid(row=4, column = 3)
+thresholdSliderA.grid(row=4, column=1)
+thresholdSliderB.grid(row=4, column=3)
 #Place Buttons
 startStop.grid(row=5, column=0)
-reset.grid(row=6, column=0)
-#listbox.grid(row=4, column=1, columnspan=3, rowspan=2)
+saveButton.grid(row=7, column=0)
+
+#Place User Input Fields
+#RatNumber
+ratNumberLabel.grid(row=5,column=1,sticky=E)
+ratNumber.grid(row=5, column=2,sticky=W)
+#Experimenter
+experimenterLabel.grid(row=6,column=1,sticky=E)
+experimenter.grid(row=6,column=2,sticky=W)
+#Comments
+commentsLabel.grid(row=7, column=1, sticky=E+N)
+comments.grid(row=7,column=2, columnspan= 3, rowspan=2, sticky=W)
+
+#Place Uneditable Data Fields
+#Pellets Eaten
+pelletsEatenLabel.grid(row=5, column=3, sticky=W)
+#Time Elapsed
+timeElapsedLabel.grid(row=6, column=3, sticky=W)
+
 
 #Update Graphics
 def updateGraphics():
@@ -168,6 +223,9 @@ def updateGraphics():
 		#Rat (Overrides anything else that might be in its square if running.)
 		if running: flooring[maze.rat.getPos()].configure(image = ratOnFloor)
 
+		#Pellets Eaten Label
+		pelletsEatenLabel.configure(text="Pellets Eaten:   "+str(maze.rat.pelletsEaten))
+		timeElapsedLabel.configure(text="Time Elapsed: "+str(maze.rat.getTime()))
 		root.after(25, updateGraphics)
 
 #Event Queue
