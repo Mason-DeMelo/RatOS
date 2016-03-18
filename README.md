@@ -1,6 +1,7 @@
 # RatOS
 Rat And Treat Oscillation System
 
+![screenshot][https://github.com/Mason-DeMelo/RatOS/blob/master/res/screenshot.PNG]
 #Dependencies
 - U3 / Labjack Drivers
 - U3 / Labjack Python Bindings
