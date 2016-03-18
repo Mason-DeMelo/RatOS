@@ -6,6 +6,7 @@ import tkMessageBox
 import Queue
 import time
 import maze
+import logger
 
 #Toggles U3 device.
 simulated = True
@@ -41,10 +42,25 @@ def toggleStart():
 def save():
 	global saved
 
-	output = open('test.txt', 'w')
-	output.write("Success!")
-	output.close()
+	theRatNumber = ratNumber.get()
+	date = time.strftime("%m/%d/%y")
+	currentTime = time.strftime("%H:%M:%S")
+	duration = maze.rat.getTime()
+	cycles = maze.rat.pelletsEaten
+	theComment = str(comments.get("1.0",END)).strip("\n")
+	theExperimenter = experimenter.get()
+	
+	try:
+		logger.updateLog(theRatNumber, date, currentTime, duration, cycles, theComment,theExperimenter)
+	except RuntimeError:
+		tkMessageBox.showerror("Failure","You did not complete the form!")
+		return
+	except Exception:
+		tkMessageBox.showerror("Failure","Please close the excel document and try again."
+		return
+
 	saved = True
+	comments.delete("1.0",END)
 	saveButton.configure(state= DISABLED, bg= "light grey")
 	maze.rat.reset()
 
