@@ -56,7 +56,7 @@ def save():
 		tkMessageBox.showerror("Failure","You did not complete the form!")
 		return
 	except Exception:
-		tkMessageBox.showerror("Failure","Please close the excel document and try again."
+		tkMessageBox.showerror("Failure","Please close the excel document and try again.")
 		return
 
 	saved = True
@@ -261,6 +261,8 @@ def updateEvents():
 #Bind Events
 root.bind("<<sensorATripped>>", aTripped)
 root.bind("<<sensorBTripped>>", bTripped)
+root.bind("<<dispenserADispensed>>", lambda: maze.outA.signal())
+root.bind("<<dispenserBDispensed>>", lambda: maze.outB.signal())
 
 #Initialize Maze
 maze = maze.Maze(root, events, simulated)
