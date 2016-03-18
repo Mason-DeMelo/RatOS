@@ -20,7 +20,7 @@ root = Tk()
 
 #Maze Variables
 dispenserAPort = 1
-dispenserBPort = 2
+dispenserBPort = 0
 sensorAPort = 5
 sensorBPort = 4
 threshold = .19
