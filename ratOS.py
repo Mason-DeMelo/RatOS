@@ -45,6 +45,7 @@ def save():
 	output.write("Success!")
 	output.close()
 	saved = True
+	saveButton.configure(state= DISABLED, bg= "light grey")
 	maze.rat.reset()
 
 def aTripped(arg):
