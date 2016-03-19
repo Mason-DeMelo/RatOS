@@ -24,12 +24,12 @@ def updateLog(number, date, time, duration, cycles, comment, experimenter):
 		ws['E1'] = "Comments"
 		ws['F1'] = "Experimienter"
 
-	row = ws.max_row + 1
-	ws['A'+str(row)] = date
-	ws['B'+str(row)] = time
-	ws['C'+str(row)] = duration
-	ws['D'+str(row)] = cycles
-	ws['E'+str(row)] = comment
-	ws['F'+str(row)] = experimenter
+	row = str(ws.max_row + 1)
+	ws['A'+row] = date
+	ws['B'+row] = time
+	ws['C'+row] = duration
+	ws['D'+row] = cycles
+	ws['E'+row] = comment
+	ws['F'+row] = experimenter
 
 	wb.save(log)
