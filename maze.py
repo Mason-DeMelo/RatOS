@@ -69,16 +69,15 @@ class Sensor(FIODevice):
             self.Status = False
 
 class NeuralynxWire(FIODevice):
-    def __init__(self,root,events,U3Device,FIOPort,name):
+    def __init__(self,root,events,U3Device,FIOPort):
         FIODevice.__init__(self,root,events,U3Device,FIOPort)
-        self.name = name
         self.d.configDigital(self.port)
         self.d.setFIOState(self.port)
         self.d.configAnalog(self.port)
 
     def signal(self):
         self.d.configDigital(self.port)
-        self.root.after(250, lambda: self.d.configAnalog(self.port))
+        self.d.configAnalog(self.port)
 
 class Rat():
 
@@ -145,8 +144,8 @@ class Maze():
             self.rat = Rat()
             self.dispenserA = Dispenser(root, events, self.d, dispenserAPort, "A")
             self.dispenserB = Dispenser(root, events, self.d, dispenserBPort, "B")
-            self.outA = NeuralynxWire(root, events, self.d, NeuralynxWireAPort, "A")
-            self.outB = NeuralynxWire(root, events, self.d, NeuralynxWireBPort, "B")
+            self.outA = NeuralynxWire(None, None, self.d, NeuralynxWireAPort)
+            self.outB = NeuralynxWire(root, events, self.d, NeuralynxWireBPort)
             self.sensorA = Sensor(root, events, self.d, sensorAPort, threshold, timeout, "A")
             self.sensorB = Sensor(root, events, self.d, sensorBPort, threshold, timeout, "B")
 

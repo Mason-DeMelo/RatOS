@@ -9,7 +9,7 @@ import maze
 import logger
 
 #Toggles U3 device.
-simulated = True
+simulated = False
 
 #create Tk Root
 root = Tk()
@@ -252,17 +252,15 @@ events = Queue.Queue()
 def updateEvents():
     while events.qsize() > 0:
         thing = events.get()
-        listbox.insert(0, thing.strip("<").strip(">"))
         root.event_generate(thing)
     root.after(23, updateEvents)
-        
     
-
+        
 #Bind Events
 root.bind("<<sensorATripped>>", aTripped)
 root.bind("<<sensorBTripped>>", bTripped)
-root.bind("<<dispenserADispensed>>", lambda: maze.outA.signal())
-root.bind("<<dispenserBDispensed>>", lambda: maze.outB.signal())
+root.bind("<<dispenserADispensed>>", lambda a: maze.outA.signal())
+root.bind("<<dispenserBDispensed>>", lambda a: maze.outB.signal())
 
 #Initialize Maze
 maze = maze.Maze(root, events, simulated)
