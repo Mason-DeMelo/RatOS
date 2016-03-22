@@ -144,7 +144,7 @@ class Maze():
             self.rat = Rat()
             self.dispenserA = Dispenser(root, events, self.d, dispenserAPort, "A")
             self.dispenserB = Dispenser(root, events, self.d, dispenserBPort, "B")
-            self.outA = NeuralynxWire(None, None, self.d, NeuralynxWireAPort)
+            self.outA = NeuralynxWire(root, events, self.d, NeuralynxWireAPort)
             self.outB = NeuralynxWire(root, events, self.d, NeuralynxWireBPort)
             self.sensorA = Sensor(root, events, self.d, sensorAPort, threshold, timeout, "A")
             self.sensorB = Sensor(root, events, self.d, sensorBPort, threshold, timeout, "B")
