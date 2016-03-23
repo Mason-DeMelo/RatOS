@@ -2,7 +2,8 @@ import openpyxl
 
 class Logger():
 	def __init__(self):
-		self.log = "ratLog.xlsx"
+		self.fileLocation = "data/"
+		self.log = self.fileLocation + "ratLog.xlsx"
 		self.detailedLog = list()
 
 	def addToDetailedLog(self, none):
@@ -23,7 +24,8 @@ class Logger():
 		if wsTitle in wb:
 			ws = wb[wsTitle]
 		else:
-			ws = wb.create_sheet(title=wsTitle)
+			ws = wb.active
+			ws.title = wsTitle
 			ws['A1'] = "Date"
 			ws['B1'] = "Time"
 			ws['C1'] = "Duration (sec)"

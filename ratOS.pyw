@@ -19,6 +19,14 @@ root.wm_iconbitmap(r"res/Rat.ico")
 running = False
 saved = True
 
+#Load Config
+configFile = open("ratOS.cfg", "r")
+config = dict()
+for line in configFile:
+	line = line.split()
+	config[line[0]] = int(line[1])
+configFile.close()
+
 #Create Logger
 logger = logger.Logger()
 
@@ -99,6 +107,14 @@ def log(text):
 		text = time.strftime("[%d/%m/%Y %H:%M:%S] ") + text
 		listbox.insert(0, text)
 
+def on_close():
+	#Update and save config file
+	with open("ratOS.cfg", "w") as file_:
+		file_.write("sensorAThreshold " + str(thresholdSliderA.get()) +"\n" +
+					"sensorBThreshold " + str(thresholdSliderB.get()))
+	#Close
+	root.destroy()
+
 #Graphics
 #Load Photos
 headerPhoto = PhotoImage(file="res/ratOS.gif")
@@ -142,6 +158,8 @@ listbox = Listbox(root, width=65)
 #Threshold Scales
 thresholdSliderA = Scale(root, from_=0, to=100, orient=HORIZONTAL, label="Threshold A", command=lambda x: maze.sensorA.updateThreshold(float(x)/100), bg='#D8D8D8')
 thresholdSliderB = Scale(root, from_=0, to=100, orient=HORIZONTAL, label="Threshold B", command=lambda x: maze.sensorB.updateThreshold(float(x)/100), bg='#D8D8D8')
+thresholdSliderA.set(config['sensorAThreshold'])
+thresholdSliderB.set(config['sensorBThreshold'])
 
 #Entries and Their Labels
 #Rat Number
@@ -264,6 +282,8 @@ root.bind("<<sensorATripped>>", aTripped)
 root.bind("<<sensorBTripped>>", bTripped)
 root.bind("<<dispenserADispensed>>", lambda a: maze.outA.signal())
 root.bind("<<dispenserBDispensed>>", lambda a: maze.outB.signal())
+
+root.protocol("WM_DELETE_WINDOW", on_close)
 
 #Initialize Maze
 maze = maze.Maze(root, events, simulated)
