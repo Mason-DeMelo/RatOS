@@ -20,6 +20,7 @@ root.wm_iconbitmap(r"res/Rat.ico")
 running = False
 saved = True
 
+
 #Load Config
 configFile = open("ratOS.cfg", "r")
 config = dict()
@@ -113,15 +114,21 @@ def onBDispense(arg):
 	logger.addToLog("B", time.strftime("%H:%M:%S"))
 
 def alert():
-	winsound.PlaySound("res/alert.wav", winsound.SND_ALIAS)
+	winsound.PlaySound('SystemHand', winsound.SND_ALIAS|winsound.SND_ASYNC)
 
 def on_close():
 	#Update and save config file
 	with open("ratOS.cfg", "w") as file_:
 		file_.write("sensorAThreshold " + str(thresholdSliderA.get()) +"\n" +
-					"sensorBThreshold " + str(thresholdSliderB.get()))
-	#Close
-	root.destroy()
+					"sensorBThreshold " + str(thresholdSliderB.get()) + "\n" +
+					"timeout " + str(500) + "\n" +
+					"maxPellets " + str(25))
+
+	#Close if Saved or Overrided
+	if saved:
+		root.destroy()
+	elif tkMessageBox.askokcancel("Are you sure?", "You haven't saved this data! This recording will be lost if you continue."):
+		root.destroy()
 
 #Graphics
 #Load Photos
@@ -272,7 +279,17 @@ def updateGraphics():
 		#Pellets Eaten Label
 		pelletsEatenLabel.configure(text="Pellets Eaten:   "+str(maze.rat.pelletsEaten))
 		timeElapsedLabel.configure(text="Time Elapsed: "+str(maze.rat.getTime()))
+
 		root.after(25, updateGraphics)
+
+def checkStopConditions():
+		if running and (maze.rat.getTime() >= config['timeout'] or maze.rat.pelletsEaten >= config['maxPellets']):
+			alert()
+			toggleStart()
+			tkMessageBox.showinfo("End Condition Met", "An end condition was met, this trial was automatically stopped.")
+
+
+		root.after(25, checkStopConditions)
 
 #Event Queue
 events = Queue.Queue()
@@ -282,7 +299,7 @@ def updateEvents():
     while events.qsize() > 0:
         thing = events.get()
         root.event_generate(thing)
-    root.after(23, updateEvents)
+    root.after(25, updateEvents)
     
         
 #Bind Events
@@ -297,6 +314,7 @@ root.protocol("WM_DELETE_WINDOW", on_close)
 maze = maze.Maze(root, events, simulated)
 
 #Begin Updating Graphics and Start Main Loop
+checkStopConditions()
 updateGraphics()
 updateEvents()
 root.mainloop()
