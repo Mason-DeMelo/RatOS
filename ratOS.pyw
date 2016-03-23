@@ -186,6 +186,12 @@ experimenterLabel = Label(text="Experimenter:")
 #Comments
 comments = Text(root, width=35, height=5, borderwidth=3, wrap=WORD, bg="white")
 commentsLabel = Label(text="Comments:")
+#End Conditions
+maxPelletsEntry = Entry(root, width=4, borderwidth=3, bg="white")
+maxPelletsLabel = Label(text="Max Pellets:")
+maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white")
+maxTimeLabel = Label(text="Max Time:")
+
 
 #Uneditable Data
 pelletsEatenLabel = Label(text="Pellets Eaten:   0")
@@ -222,13 +228,18 @@ experimenter.grid(row=6,column=2,sticky=W)
 #Comments
 commentsLabel.grid(row=7, column=1, sticky=E+N)
 comments.grid(row=7,column=2, columnspan= 3, rowspan=2, sticky=W)
+#Max Pellets
+maxPelletsLabel.grid(row=5, column=4, sticky=W)
+maxPelletsEntry.grid(row=5,column=4, sticky=E)
+#Max Time
+maxTimeLabel.grid(row=6,column=4,sticky=W)
+maxTimeEntry.grid(row=6,column=4,sticky=E, text="500")
 
 #Place Uneditable Data Fields
 #Pellets Eaten
 pelletsEatenLabel.grid(row=5, column=3, sticky=W)
 #Time Elapsed
 timeElapsedLabel.grid(row=6, column=3, sticky=W)
-
 
 #Update Graphics
 def updateGraphics():
