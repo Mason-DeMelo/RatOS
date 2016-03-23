@@ -233,7 +233,7 @@ maxPelletsLabel.grid(row=5, column=4, sticky=W)
 maxPelletsEntry.grid(row=5,column=4, sticky=E)
 #Max Time
 maxTimeLabel.grid(row=6,column=4,sticky=W)
-maxTimeEntry.grid(row=6,column=4,sticky=E, text="500")
+maxTimeEntry.grid(row=6,column=4,sticky=E)
 
 #Place Uneditable Data Fields
 #Pellets Eaten
