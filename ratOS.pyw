@@ -66,8 +66,8 @@ def save():
 	except RuntimeError:
 		tkMessageBox.showerror("Failure","You did not complete the form!")
 		return
-	except Exception:
-		tkMessageBox.showerror("Failure","Please close the excel document and try again.")
+	except Exception as e:
+		tkMessageBox.showerror("Failure","Please close the excel document and try again." + str(e))
 		return
 
 	saved = True
@@ -103,9 +103,13 @@ def bTripped(arg):
 			root.after(500, lambda: maze.rat.setPos(2))
 	root.after(500, lambda: maze.dispenserB.removePellet())
 
-def log(text):
-		text = time.strftime("[%d/%m/%Y %H:%M:%S] ") + text
-		listbox.insert(0, text)
+def onADispense(arg):
+	maze.outA.signal()
+	logger.addToLog("A", time.strftime("%H:%M:%S"))
+
+def onBDispense(arg):
+	maze.outB.signal()
+	logger.addToLog("B", time.strftime("%H:%M:%S"))
 
 def on_close():
 	#Update and save config file
@@ -280,8 +284,8 @@ def updateEvents():
 #Bind Events
 root.bind("<<sensorATripped>>", aTripped)
 root.bind("<<sensorBTripped>>", bTripped)
-root.bind("<<dispenserADispensed>>", lambda a: maze.outA.signal())
-root.bind("<<dispenserBDispensed>>", lambda a: maze.outB.signal())
+root.bind("<<dispenserADispensed>>", onADispense)
+root.bind("<<dispenserBDispensed>>", onBDispense)
 
 root.protocol("WM_DELETE_WINDOW", on_close)
 

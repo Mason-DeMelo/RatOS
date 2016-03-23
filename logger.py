@@ -6,8 +6,8 @@ class Logger():
 		self.log = self.fileLocation + "ratLog.xlsx"
 		self.detailedLog = list()
 
-	def addToDetailedLog(self, none):
-		pass
+	def addToLog(self, side, time):
+		self.detailedLog.append([side, time])
 
 	def updateLog(self, number, date, time, duration, cycles, comment, experimenter):
 		#Update Log Book
@@ -44,3 +44,26 @@ class Logger():
 		wb.save(self.log)
 
 		#Update individual Rat Log
+		individualLog = self.fileLocation + "Rat " + str(number) +".xlsx"
+		try:
+			wb = openpyxl.load_workbook(individualLog)
+		except:
+			wb = openpyxl.Workbook()
+
+		wsTitle = date.replace("/","-")
+
+		if wsTitle in wb:
+			ws = wb[wsTitle]
+		else:
+			ws = wb.active
+			ws.title = wsTitle
+			ws['A1'] = "Side"
+			ws['B1'] = "Time"
+
+		for event in self.detailedLog:
+			row = str(ws.max_row + 1)
+			ws['A'+row] = event[0]
+			ws['B'+row] = event[1]
+
+		wb.save(individualLog)
+		self.detaileLog = list()
