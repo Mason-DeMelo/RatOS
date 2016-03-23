@@ -10,7 +10,6 @@ Rat And Treat Oscillation System
 
 #To-Do:
 - Auto-threshold if it can be implimented.
-- More detailed logs. (An excel file for each rat, with worksheets sorted by date.)
 - An auto-stop based on pellets eaten & time elapsed. (Should remember previous settings.)
 
 #About
