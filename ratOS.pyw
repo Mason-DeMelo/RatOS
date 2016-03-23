@@ -9,7 +9,7 @@ import maze
 import logger
 
 #Toggles U3 device.
-simulated = False
+simulated = True
 
 #create Tk Root
 root = Tk()
@@ -18,6 +18,9 @@ root.title("RatOS")
 root.wm_iconbitmap(r"res/Rat.ico")
 running = False
 saved = True
+
+#Create Logger
+logger = logger.Logger()
 
 #Functions
 def toggleStart():

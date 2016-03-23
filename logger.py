@@ -1,35 +1,44 @@
 import openpyxl
 
-log = "ratLog.xlsx"
+class Logger():
+	def __init__(self):
+		self.log = "ratLog.xlsx"
+		self.detailedLog = list()
 
-def updateLog(number, date, time, duration, cycles, comment, experimenter):
-	if number == "" or experimenter == "":
-		raise RuntimeError("The form was incomplete!")
-	
-	try:
-		wb = openpyxl.load_workbook(log)
-	except:
-		wb = openpyxl.Workbook()
+	def addToDetailedLog(self, none):
+		pass
 
-	wsTitle = "Rat "+str(number)
+	def updateLog(self, number, date, time, duration, cycles, comment, experimenter):
+		#Update Log Book
+		if number == "" or experimenter == "":
+			raise RuntimeError("The form was incomplete!")
+		
+		try:
+			wb = openpyxl.load_workbook(self.log)
+		except:
+			wb = openpyxl.Workbook()
 
-	if wsTitle in wb:
-		ws = wb[wsTitle]
-	else:
-		ws = wb.create_sheet(title=wsTitle)
-		ws['A1'] = "Date"
-		ws['B1'] = "Time"
-		ws['C1'] = "Duration (sec)"
-		ws['D1'] = "Cycles"
-		ws['E1'] = "Comments"
-		ws['F1'] = "Experimienter"
+		wsTitle = "Rat "+str(number)
 
-	row = str(ws.max_row + 1)
-	ws['A'+row] = date
-	ws['B'+row] = time
-	ws['C'+row] = duration
-	ws['D'+row] = cycles
-	ws['E'+row] = comment
-	ws['F'+row] = experimenter
+		if wsTitle in wb:
+			ws = wb[wsTitle]
+		else:
+			ws = wb.create_sheet(title=wsTitle)
+			ws['A1'] = "Date"
+			ws['B1'] = "Time"
+			ws['C1'] = "Duration (sec)"
+			ws['D1'] = "Cycles"
+			ws['E1'] = "Comments"
+			ws['F1'] = "Experimienter"
 
-	wb.save(log)
+		row = str(ws.max_row + 1)
+		ws['A'+row] = date
+		ws['B'+row] = time
+		ws['C'+row] = duration
+		ws['D'+row] = cycles
+		ws['E'+row] = comment
+		ws['F'+row] = experimenter
+
+		wb.save(self.log)
+
+		#Update individual Rat Log
