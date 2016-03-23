@@ -7,6 +7,7 @@ import Queue
 import time
 import maze
 import logger
+import winsound
 
 #Toggles U3 device.
 simulated = True
@@ -110,6 +111,9 @@ def onADispense(arg):
 def onBDispense(arg):
 	maze.outB.signal()
 	logger.addToLog("B", time.strftime("%H:%M:%S"))
+
+def alert():
+	winsound.PlaySound("res/alert.wav", winsound.SND_ALIAS)
 
 def on_close():
 	#Update and save config file
