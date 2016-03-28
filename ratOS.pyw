@@ -107,11 +107,11 @@ def bTripped(arg):
 
 def onADispense(arg):
 	maze.outA.signal()
-	logger.addToLog("A", time.strftime("%H:%M:%S"))
+	logger.addToLog("Wall Feeder", time.strftime("%H:%M:%S"))
 
 def onBDispense(arg):
 	maze.outB.signal()
-	logger.addToLog("B", time.strftime("%H:%M:%S"))
+	logger.addToLog("Door Feeder", time.strftime("%H:%M:%S"))
 
 def alert():
 	winsound.PlaySound('SystemHand', winsound.SND_ALIAS|winsound.SND_ASYNC)
