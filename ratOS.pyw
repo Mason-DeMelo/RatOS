@@ -10,7 +10,7 @@ import logger
 import winsound
 
 #Toggles U3 device.
-simulated = True
+simulated = False
 
 #create Tk Root
 root = Tk()
@@ -121,8 +121,8 @@ def on_close():
 	with open("ratOS.cfg", "w") as file_:
 		file_.write("sensorAThreshold " + str(thresholdSliderA.get()) +"\n" +
 					"sensorBThreshold " + str(thresholdSliderB.get()) + "\n" +
-					"timeout " + str(500) + "\n" +
-					"maxPellets " + str(25))
+					"timeout " + str(0) + "\n" +
+					"maxPellets " + str(0))
 
 	#Close if Saved or Overrided
 	if saved:
@@ -294,6 +294,7 @@ def updateGraphics():
 		root.after(25, updateGraphics)
 
 def checkStopConditions():
+                return
 		if running and (maze.rat.getTime() >= config['timeout'] or maze.rat.pelletsEaten >= config['maxPellets']):
 			alert()
 			toggleStart()
