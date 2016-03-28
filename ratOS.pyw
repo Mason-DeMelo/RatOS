@@ -116,13 +116,28 @@ def onBDispense(arg):
 def alert():
 	winsound.PlaySound('SystemHand', winsound.SND_ALIAS|winsound.SND_ASYNC)
 
+def setTimeout(val):
+	try:
+		config['timeout'] = int(val)
+		return True
+	except:
+		config['timeout'] = 0
+		return False
+def setMaxPellets(val):
+	try:
+		config['maxPellets'] = int(val)
+		return True
+	except:
+		config['maxPellets'] = 0
+		return False
+
 def on_close():
 	#Update and save config file
 	with open("ratOS.cfg", "w") as file_:
 		file_.write("sensorAThreshold " + str(thresholdSliderA.get()) +"\n" +
 					"sensorBThreshold " + str(thresholdSliderB.get()) + "\n" +
-					"timeout " + str(0) + "\n" +
-					"maxPellets " + str(0))
+					"timeout " + str(config['timeout']) + "\n" +
+					"maxPellets " + str(config['maxPellets']))
 
 	#Close if Saved or Overrided
 	if saved:
@@ -187,10 +202,13 @@ experimenterLabel = Label(text="Experimenter:")
 comments = Text(root, width=35, height=5, borderwidth=3, wrap=WORD, bg="white")
 commentsLabel = Label(text="Comments:")
 #End Conditions
-maxPelletsEntry = Entry(root, width=4, borderwidth=3, bg="white")
+maxPelletsEntry = Entry(root, width=4, borderwidth=3, bg="white")#, validate = "key", vcmd = lambda: setMaxPellets(maxPelletsEntry.get()))
+maxPelletsEntry.insert(config['maxPellets'], 0)
 maxPelletsLabel = Label(text="Max Pellets:")
-maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white")
+maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white")#, validate = "key", vcmd = lambda: setTimeout(maxTimeEntry.get()))
+maxTimeEntry.insert(config['timeout'], 0)
 maxTimeLabel = Label(text="Max Time:")
+
 
 
 #Uneditable Data
@@ -294,26 +312,30 @@ def updateGraphics():
 		root.after(25, updateGraphics)
 
 def checkStopConditions():
-                return
-		if running and (maze.rat.getTime() >= config['timeout'] or maze.rat.pelletsEaten >= config['maxPellets']):
+		if not running:
+			root.after(1000, checkStopConditions)
+			return
+		if not config['timeout'] == 0 and maze.rat.getTime() >= config['timeout']:
 			alert()
 			toggleStart()
-			tkMessageBox.showinfo("End Condition Met", "An end condition was met, this trial was automatically stopped.")
-
-
-		root.after(25, checkStopConditions)
+			tkMessageBox.showinfo("End Condition Met", "The rat reached the maximum time allotted.")
+		if not config['maxPellets'] == 0 and maze.rat.pelletsEaten >= config['maxPellets']:
+			alert()
+			toggleStart()
+			tkMessageBox.showinfo("End Condition Met", "The rat recieved the maximum amount of pellets.")
+		root.after(500, checkStopConditions)
 
 #Event Queue
 events = Queue.Queue()
 
 #Update Events
 def updateEvents():
-    while events.qsize() > 0:
-        thing = events.get()
-        root.event_generate(thing)
-    root.after(25, updateEvents)
+        while events.qsize() > 0:
+                thing = events.get()
+                root.event_generate(thing)
+        root.after(25, updateEvents)
     
-        
+	
 #Bind Events
 root.bind("<<sensorATripped>>", aTripped)
 root.bind("<<sensorBTripped>>", bTripped)
