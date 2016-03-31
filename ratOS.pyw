@@ -209,7 +209,7 @@ maxPelletsEntry.insert(0, config['maxPellets'])
 maxPelletsLabel = Label(text="Max Pellets:")
 maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white", validate = "focusout", vcmd = lambda: setTimeout(maxTimeEntry.get()))
 maxTimeEntry.insert(0, config['timeout'])
-maxTimeLabel = Label(text="Max Time:")
+maxTimeLabel = Label(text="Max Time(s):")
 
 
 
