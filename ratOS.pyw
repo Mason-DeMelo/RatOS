@@ -46,6 +46,8 @@ def toggleStart():
 	if running:
 		maze.rat.reset()
 		maze.rat.startTimer()
+		setMaxPellets(maxPelletsEntry.get()) #These are here in case the entry window doesn't lose focus.
+		setTimeout(maxTimeEntry.get())
 	else:
 		maze.rat.stopTimer()
 
@@ -202,11 +204,11 @@ experimenterLabel = Label(text="Experimenter:")
 comments = Text(root, width=35, height=5, borderwidth=3, wrap=WORD, bg="white")
 commentsLabel = Label(text="Comments:")
 #End Conditions
-maxPelletsEntry = Entry(root, width=4, borderwidth=3, bg="white")#, validate = "key", vcmd = lambda: setMaxPellets(maxPelletsEntry.get()))
-maxPelletsEntry.insert(config['maxPellets'], 0)
+maxPelletsEntry = Entry(root, width=4, borderwidth=3, bg="white", validate = "focusout", vcmd = lambda: setMaxPellets(maxPelletsEntry.get()))
+maxPelletsEntry.insert(0, config['maxPellets'])
 maxPelletsLabel = Label(text="Max Pellets:")
-maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white")#, validate = "key", vcmd = lambda: setTimeout(maxTimeEntry.get()))
-maxTimeEntry.insert(config['timeout'], 0)
+maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white", validate = "focusout", vcmd = lambda: setTimeout(maxTimeEntry.get()))
+maxTimeEntry.insert(0, config['timeout'])
 maxTimeLabel = Label(text="Max Time:")
 
 
