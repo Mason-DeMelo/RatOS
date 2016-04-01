@@ -10,7 +10,9 @@ Rat And Treat Oscillation System
 
 #To-Do:
 - Auto-threshold if it can be implimented.
-- An auto-stop based on pellets eaten & time elapsed. (Should remember previous settings.)
+- Migrate all data collection to a single excel file.
+- Differentiate between user-dispensing and auto-dispensing in log file.
+- Save data to a location that is backed up (Networked folder?)
 
 #About
 Programmed by Mason DeMelo for the Markus Laboratory in the UConn Psychology Department.
