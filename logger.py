@@ -24,7 +24,7 @@ class Logger():
 		if wsTitle in wb:
 			ws = wb[wsTitle]
 		else:
-			ws = wb.active
+			ws = wb.create_sheet()
 			ws.title = wsTitle
 			ws['A1'] = "Date"
 			ws['B1'] = "Time"
@@ -55,7 +55,7 @@ class Logger():
 		if wsTitle in wb:
 			ws = wb[wsTitle]
 		else:
-			ws = wb.active
+			ws = wb.create_sheet()
 			ws.title = wsTitle
 			ws['A1'] = "Side"
 			ws['B1'] = "Time"
