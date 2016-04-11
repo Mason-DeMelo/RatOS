@@ -58,7 +58,7 @@ def save():
 	global saved
 
 	theRatNumber = ratNumber.get()
-	date = time.strftime("%m/%d/%y")
+	date = time.strftime("%m/%d/%Y")
 	currentTime = time.strftime("%H:%M:%S")
 	duration = maze.rat.getTime()
 	cycles = maze.rat.pelletsEaten
@@ -66,7 +66,7 @@ def save():
 	theExperimenter = experimenter.get()
 	
 	try:
-		logger.updateLog(theRatNumber, date, currentTime, duration, cycles, theComment,theExperimenter)
+		logger.updateLog(theRatNumber, date, duration, cycles, theComment,theExperimenter)
 	except RuntimeError:
 		tkMessageBox.showerror("Failure","You did not complete the form!")
 		return
@@ -85,7 +85,7 @@ def aTripped(arg):
 	if maze.rat.comingFrom != "a":
 			maze.rat.setPos(1)
 			root.after(500, lambda: maze.rat.setPos(0))
-			maze.dispenserA.dispense()
+			maze.dispenserB.dispense()
 			maze.rat.atePellet()
 			maze.rat.comingFrom = "a"
 	else:
@@ -99,7 +99,7 @@ def bTripped(arg):
 	if maze.rat.comingFrom != "b":
 			maze.rat.setPos(3)
 			root.after(500, lambda: maze.rat.setPos(4))
-			maze.dispenserB.dispense()
+			maze.dispenserA.dispense()
 			maze.rat.atePellet()
 			maze.rat.comingFrom = "b"
 	else:
@@ -109,11 +109,13 @@ def bTripped(arg):
 
 def onADispense(arg):
 	maze.outA.signal()
-	logger.addToLog("Wall Feeder", time.strftime("%H:%M:%S"))
+	#Wall feeder activated but eating from door feeder
+	logger.addToLog("Door Feeder", time.strftime("%H:%M:%S"))
 
 def onBDispense(arg):
 	maze.outB.signal()
-	logger.addToLog("Door Feeder", time.strftime("%H:%M:%S"))
+	#Door feeder activated but eating from wall feeder
+	logger.addToLog("Wall Feeder", time.strftime("%H:%M:%S"))
 
 def alert():
 	winsound.PlaySound('SystemHand', winsound.SND_ALIAS|winsound.SND_ASYNC)

@@ -81,9 +81,9 @@ class NeuralynxWire():
 
 class Rat():
 
-    def __init__(self, pos = 2):
+    def __init__(self, pos = 4):
         self.pos = pos
-        self.comingFrom = None
+        self.comingFrom = "a"
         self.pelletsEaten = 0
         self.startTime = None
         self.endTime = None
