@@ -178,8 +178,8 @@ for i in range(0,5):
 
 #Buttons
 #Feeder Buttons
-manualFeederA = Button(root, command= lambda:maze.dispenserA.dispense(), text="Feeder A")
-manualFeederB = Button(root, command= lambda:maze.dispenserB.dispense(), text="Feeder B")
+manualFeederA = Button(root, command= lambda:maze.dispenserA.dispense(True), text="Feeder A")
+manualFeederB = Button(root, command= lambda:maze.dispenserB.dispense(True), text="Feeder B")
 #Experiment Control Buttons
 startStop = Button(root, text="Start", command = toggleStart, bg="Green")
 saveButton = Button(root, text="Save", command=save, state=DISABLED, bg="light grey")

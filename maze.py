@@ -32,11 +32,12 @@ class Dispenser(FIODevice):
         self.d.configDigital(self.port)
         self.d.setFIOState(self.port)
 
-    def dispense(self):
+    def dispense(self, manual = False):
         self.pellet = True
         self.Status = True
         self.d.configAnalog(self.port)
-        self.events.put("<<dispenser"+self.name+"Dispensed>>")
+        if not manual:
+            self.events.put("<<dispenser"+self.name+"Dispensed>>")
         self.root.after(500, lambda: self.d.configDigital(self.port))
         self.root.after(500, lambda: self.setStatus(False))
 
