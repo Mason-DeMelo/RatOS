@@ -10,7 +10,8 @@ Rat And Treat Oscillation System
 
 #To-Do:
 - Auto-threshold if it can be implimented.
-- Differentiate between user-dispensing and auto-dispensing in log file.
+- Display time in minutes/seconds
+- "Lap" Button
 - Save data to a location that is backed up (Networked folder? Talk to Etan about this.)
 
 #About
