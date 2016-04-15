@@ -84,7 +84,7 @@ class Rat():
 
     def __init__(self, pos = 4):
         self.pos = pos
-        self.comingFrom = "a"
+        self.comingFrom = "b"
         self.pelletsEaten = 0
         self.startTime = None
         self.endTime = None
