@@ -122,7 +122,7 @@ def alert():
 
 def setTimeout(val):
 	try:
-		config['timeout'] = int(val) * 60  #convert to seconds
+		config['timeout'] = int(val) * 60
 		return True
 	except:
 		config['timeout'] = 0
@@ -141,7 +141,7 @@ def on_close():
 		file_.write("sensorAThreshold " + str(thresholdSliderA.get()) +"\n" +
 					"sensorBThreshold " + str(thresholdSliderB.get()) + "\n" +
 					"timeout " + str(config['timeout']) + "\n" +
-					"maxPellets " + str(config['maxPellets']))
+					"maxPellets " + str(config['maxPellets']//60))
 
 	#Close if Saved or Overrided
 	if saved:
@@ -210,8 +210,8 @@ maxPelletsEntry = Entry(root, width=4, borderwidth=3, bg="white", validate = "fo
 maxPelletsEntry.insert(0, config['maxPellets'])
 maxPelletsLabel = Label(text="Max Pellets:")
 maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white", validate = "focusout", vcmd = lambda: setTimeout(maxTimeEntry.get()))
-maxTimeEntry.insert(0, config['timeout'])
-maxTimeLabel = Label(text="Max Time(m):")
+maxTimeEntry.insert(0, config['timeout']//60)
+maxTimeLabel = Label(text="Timout(m):")
 
 
 
@@ -311,7 +311,7 @@ def updateGraphics():
 
 		#Pellets Eaten Label
 		pelletsEatenLabel.configure(text="Pellets Eaten:   "+str(maze.rat.pelletsEaten))
-		timeElapsedLabel.configure(text="Time Elapsed: "+ str(maze.rat.getTime()//60) + ":" + str(maze.rat.getTime()%60))
+		timeElapsedLabel.configure(text="Time Elapsed: "+ str(int(maze.rat.getTime()//60)).zfill(2) + ":" + str(int(maze.rat.getTime()%60)).zfill(2))
 
 		root.after(25, updateGraphics)
 
