@@ -114,7 +114,7 @@ class Rat():
 
     def getTime(self):
         if self.startTime == None:
-            return "None"
+            return 0
         elif self.endTime == None:
             return round(time.time() - self.startTime,1)
         else:

@@ -122,7 +122,7 @@ def alert():
 
 def setTimeout(val):
 	try:
-		config['timeout'] = int(val)
+		config['timeout'] = int(val) * 60  #convert to seconds
 		return True
 	except:
 		config['timeout'] = 0
@@ -211,7 +211,7 @@ maxPelletsEntry.insert(0, config['maxPellets'])
 maxPelletsLabel = Label(text="Max Pellets:")
 maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white", validate = "focusout", vcmd = lambda: setTimeout(maxTimeEntry.get()))
 maxTimeEntry.insert(0, config['timeout'])
-maxTimeLabel = Label(text="Max Time(s):")
+maxTimeLabel = Label(text="Max Time(m):")
 
 
 
@@ -311,7 +311,7 @@ def updateGraphics():
 
 		#Pellets Eaten Label
 		pelletsEatenLabel.configure(text="Pellets Eaten:   "+str(maze.rat.pelletsEaten))
-		timeElapsedLabel.configure(text="Time Elapsed: "+str(maze.rat.getTime()))
+		timeElapsedLabel.configure(text="Time Elapsed: "+ str(maze.rat.getTime()//60) + ":" + str(maze.rat.getTime()%60))
 
 		root.after(25, updateGraphics)
 
