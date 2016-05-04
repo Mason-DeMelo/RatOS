@@ -10,7 +10,6 @@ Rat And Treat Oscillation System
 
 #To-Do:
 - Auto-threshold if it can be implimented.
-- Display time in minutes/seconds
 - "Lap" Button
 - Save data to a location that is backed up (Networked folder? Talk to Etan about this.)
 
