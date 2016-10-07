@@ -48,6 +48,7 @@ def toggleStart():
 		maze.rat.startTimer()
 		setMaxPellets(maxPelletsEntry.get()) #These are here in case the entry window doesn't lose focus.
 		setTimeout(maxTimeEntry.get())
+		setpelletsPerActivation(pelletsPerActivationEntry.get())
 	else:
 		maze.rat.stopTimer()
 
@@ -85,7 +86,8 @@ def aTripped(arg):
 	if maze.rat.comingFrom != "a":
 			maze.rat.setPos(1)
 			root.after(500, lambda: maze.rat.setPos(0))
-			maze.dispenserB.dispense()
+			for i in range(config['pelletsPerActivation']):
+				root.after(600*i,maze.dispenserB.dispense())
 			maze.rat.atePellet()
 			maze.rat.comingFrom = "a"
 	else:
@@ -99,7 +101,8 @@ def bTripped(arg):
 	if maze.rat.comingFrom != "b":
 			maze.rat.setPos(3)
 			root.after(500, lambda: maze.rat.setPos(4))
-			maze.dispenserA.dispense()
+			for i in range(config['pelletsPerActivation']):
+				root.after(600*i, maze.dispenserA.dispense())
 			maze.rat.atePellet()
 			maze.rat.comingFrom = "b"
 	else:
@@ -134,6 +137,14 @@ def setMaxPellets(val):
 	except:
 		config['maxPellets'] = 0
 		return False
+def setpelletsPerActivation(val):
+	try:
+		config['pelletsPerActivation'] = int(val)
+		return True
+	except:
+		config['pelletsPerActivation'] = 1
+		return False
+
 
 def on_close():
 	#Update and save config file
@@ -141,7 +152,8 @@ def on_close():
 		file_.write("sensorAThreshold " + str(thresholdSliderA.get()) +"\n" +
 					"sensorBThreshold " + str(thresholdSliderB.get()) + "\n" +
 					"timeout " + str(config['timeout']) + "\n" +
-					"maxPellets " + str(config['maxPellets']//60))
+					"maxPellets " + str(config['maxPellets']//60) + "\n" +
+				    "pelletsPerActivation " + str(config['pelletsPerActivation']))
 
 	#Close if Saved or Overrided
 	if saved:
@@ -208,15 +220,19 @@ commentsLabel = Label(text="Comments:")
 #End Conditions
 maxPelletsEntry = Entry(root, width=4, borderwidth=3, bg="white", validate = "focusout", vcmd = lambda: setMaxPellets(maxPelletsEntry.get()))
 maxPelletsEntry.insert(0, config['maxPellets'])
-maxPelletsLabel = Label(text="Max Pellets:")
+maxPelletsLabel = Label(text="Max Runs:")
 maxTimeEntry = Entry(root, width=4, borderwidth=3, bg="white", validate = "focusout", vcmd = lambda: setTimeout(maxTimeEntry.get()))
 maxTimeEntry.insert(0, config['timeout']//60)
 maxTimeLabel = Label(text="Timout(m):")
 
+#Number of pellets dispensed per activation
+pelletsPerActivationEntry = Entry(root, width=4, borderwidth=3, bg="white", validate="focusout", vcmd = lambda: setpelletsPerActivation(pelletsPerActivationEntry.get()))
+pelletsPerActivationEntry.insert(0, config['pelletsPerActivation'])
+pelletsPerActivationLabel = Label(text="Pellets Per:")
 
 
 #Uneditable Data
-pelletsEatenLabel = Label(text="Pellets Eaten:   0")
+pelletsEatenLabel = Label(text="Runs:   0")
 timeElapsedLabel = Label(text="Time Elapsed: None")
 
 #Setup GUI Layout
@@ -256,12 +272,16 @@ maxPelletsEntry.grid(row=5,column=4, sticky=E)
 #Max Time
 maxTimeLabel.grid(row=6,column=4,sticky=W)
 maxTimeEntry.grid(row=6,column=4,sticky=E)
-
+#Pellets Per Activation
+pelletsPerActivationLabel.grid(row=4, column=4, sticky=W+S)
+pelletsPerActivationEntry.grid(row=4,column=4, sticky=E+S)
 #Place Uneditable Data Fields
 #Pellets Eaten
 pelletsEatenLabel.grid(row=5, column=3, sticky=W)
 #Time Elapsed
 timeElapsedLabel.grid(row=6, column=3, sticky=W)
+
+
 
 #Update Graphics
 def updateGraphics():
@@ -310,7 +330,7 @@ def updateGraphics():
 		if running: flooring[maze.rat.getPos()].configure(image = ratOnFloor)
 
 		#Pellets Eaten Label
-		pelletsEatenLabel.configure(text="Pellets Eaten:   "+str(maze.rat.pelletsEaten))
+		pelletsEatenLabel.configure(text="Runs:   "+str(maze.rat.pelletsEaten))
 		timeElapsedLabel.configure(text="Time Elapsed: "+ str(int(maze.rat.getTime()//60)).zfill(2) + ":" + str(int(maze.rat.getTime()%60)).zfill(2))
 
 		root.after(25, updateGraphics)
