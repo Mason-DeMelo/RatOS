@@ -86,8 +86,9 @@ def aTripped(arg):
 	if maze.rat.comingFrom != "a":
 			maze.rat.setPos(1)
 			root.after(500, lambda: maze.rat.setPos(0))
-			for i in range(config['pelletsPerActivation']):
-				root.after(600*i,maze.dispenserB.dispense())
+			maze.dispenserB.dispense()
+			for i in range(config['pelletsPerActivation']-1):
+				root.after(600*(i+1),lambda: maze.dispenserB.dispense(manual=True))
 			maze.rat.atePellet()
 			maze.rat.comingFrom = "a"
 	else:
@@ -101,8 +102,9 @@ def bTripped(arg):
 	if maze.rat.comingFrom != "b":
 			maze.rat.setPos(3)
 			root.after(500, lambda: maze.rat.setPos(4))
-			for i in range(config['pelletsPerActivation']):
-				root.after(600*i, maze.dispenserA.dispense())
+			maze.dispenserA.dispense()
+			for i in range(config['pelletsPerActivation']-1):
+				root.after(600*(i+1), lambda: maze.dispenserA.dispense(manual=True))
 			maze.rat.atePellet()
 			maze.rat.comingFrom = "b"
 	else:
