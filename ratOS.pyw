@@ -141,7 +141,7 @@ def on_close():
 		file_.write("sensorAThreshold " + str(thresholdSliderA.get()) +"\n" +
 					"sensorBThreshold " + str(thresholdSliderB.get()) + "\n" +
 					"timeout " + str(config['timeout']) + "\n" +
-					"maxPellets " + str(config['maxPellets']//60))
+					"maxPellets " + str(config['maxPellets']))
 
 	#Close if Saved or Overrided
 	if saved:
